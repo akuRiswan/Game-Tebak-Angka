@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Tebak Angka</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      main {
+        margin: 0 auto;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #0b192c;
+      }
+
+      .container {
+        /* background-color: aqua; */
+        background: rgb(58, 109, 140);
+        background: linear-gradient(312deg, rgba(58, 109, 140, 1) 0%, rgba(0, 75, 153, 1) 100%);
+        color: #fff;
+        width: 500px;
+        max-width: 80%;
+        height: 500px;
+        border-radius: 20px;
+        border: 2px solid black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .wrapper {
+        height: fit-content;
+        width: fit-content;
+        align-self: center;
+      }
+
+      button {
+        margin: 20px 0;
+        width: 200px;
+        padding: 10px;
+        cursor: pointer;
+        align-self: center;
+        border: none;
+        border-radius: 10px;
+        background-color: #0b192c;
+        color: #fff;
+      }
+
+      input {
+        width: 300px;
+        align-self: center;
+        padding: 10px;
+        margin: 20px 0 10px;
+        color: #000;
+      }
+
+      #pesan {
+        width: 300px;
+        align-self: center;
+        height: 55px;
+      }
+
+      #mainLagiBtn {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <div class="container">
+        <div class="wrapper">
+          <h1>Game Tebak Angka</h1>
+          <p>Masukkan angka antara 1 dan 100:</p>
+
+          <!-- inputan -->
+          <input type="number" id="inputan" />
+
+          <!-- kesempatan user -->
+          <p id="kesempatan"></p>
+
+          <!-- button tebak -->
+          <button id="tebakBtn" onclick="periksaInputan()">Tebak!</button>
+
+          <!-- pesan (akan ditampilkan setelah game selesai) -->
+          <p id="pesan"></p>
+
+          <!-- Tombol main lagi (akan ditampilkan setelah game selesai) -->
+          <button id="mainLagiBtn" onclick="resetGame()">Main Lagi</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let angkaRandom = Math.floor(Math.random() * 100) + 1;
+      console.log(angkaRandom);
+
+      const inputan = document.getElementById("inputan");
+      const pesan = document.getElementById("pesan");
+      const kesempatan = document.getElementById("kesempatan");
+      const tebakBtn = document.getElementById("tebakBtn");
+      const mainLagiBtn = document.getElementById("mainLagiBtn");
+      const laguMenang = new Audio("assets/songs/lagu kemenangan/windah.mp3");
+      const laguKalah = new Audio("assets/songs/lagu kekalahan/sad-meow-song.mp3");
+      const sfxSalah = new Audio("assets/songs/sfx-salah/sfx-soal-salah.mp3");
+      const sfxBruh = new Audio("assets/songs/sfx-salah/bruh.mp3");
+
+      let percobaan = 0;
+      let batasPercobaan = 10;
+
+      kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+
+      function periksaInputan() {
+        let angkaTebakan = parseInt(inputan.value);
+        percobaan++;
+        batasPercobaan--;
+
+        if (batasPercobaan > 0) {
+          if (isNaN(angkaTebakan)) {
+            pesan.innerHTML = "Masukkan angka yang valid!";
+            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+
+            // sfx bruh
+            sfxBruh.play();
+            sfxBruh.currentTime = 0;
+          } else if (angkaTebakan === angkaRandom) {
+            pesan.innerHTML = "Selamat! Tebakan Anda benar.";
+            kesempatan.innerHTML = "";
+
+            // lagu menang
+            laguMenang.play();
+
+            // Nonaktifkan input dan tombol jika berhasil
+            inputan.disabled = true;
+            tebakBtn.disabled = true;
+            mainLagiBtn.style.visibility = "visible"; // Tampilkan tombol "Main Lagi"
+          } else if (angkaTebakan < angkaRandom) {
+            pesan.innerHTML = "Tebakan anda terlalu kecil.";
+            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+            sfxSalah.play();
+            sfxSalah.currentTime = 0;
+          } else {
+            pesan.innerHTML = "Tebakan anda terlalu besar.";
+            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+            sfxSalah.play();
+            sfxSalah.currentTime = 0;
+          }
+        } else {
+          kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+          pesan.innerHTML = `Kesempatan Anda telah habis. Permainan berakhir! Angka yang benar adalah ${angkaRandom}`;
+          // Nonaktifkan input dan tombol jika percobaan habis
+          inputan.disabled = true;
+          tebakBtn.disabled = true;
+          mainLagiBtn.style.visibility = "visible"; // Tampilkan tombol "Main Lagi"
+
+          // lagu kalah
+          laguKalah.play();
+        }
+      }
+
+      function resetGame() {
+        // lagu menang
+        laguMenang.pause();
+        laguMenang.currentTime = 0;
+
+        // lagu  kalah
+        laguKalah.pause();
+        laguMenang.currentTime = 0;
+
+        // Reset semua nilai dan tampilan
+        angkaRandom = Math.floor(Math.random() * 100) + 1;
+        percobaan = 0;
+        batasPercobaan = 10;
+
+        inputan.disabled = false;
+        inputan.value = ""; // Kosongkan input
+        tebakBtn.disabled = false;
+        pesan.innerHTML = "";
+        kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+        mainLagiBtn.style.visibility = "hidden"; // Sembunyikan tombol "Main Lagi"
+      }
+    </script>
+  </body>
+</html>

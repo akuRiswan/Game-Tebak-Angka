@@ -101,90 +101,115 @@
     </main>
 
     <script>
+      // Membuat angka acak dari 1 hingga 100
       let angkaRandom = Math.floor(Math.random() * 100) + 1;
 
+      // Mendapatkan elemen-elemen dari HTML berdasarkan id
       const inputan = document.getElementById("inputan");
       const pesan = document.getElementById("pesan");
       const kesempatan = document.getElementById("kesempatan");
       const tebakBtn = document.getElementById("tebakBtn");
       const mainLagiBtn = document.getElementById("mainLagiBtn");
+
+      // Mendefinisikan audio untuk efek suara (menang, kalah, dan sfx)
       const laguMenang = new Audio("assets/songs/lagu kemenangan/windah.mp3");
       const laguKalah = new Audio("assets/songs/lagu kekalahan/sad-meow-song.mp3");
       const sfxSalah = new Audio("assets/songs/sfx-salah/sfx-soal-salah.mp3");
       const sfxBruh = new Audio("assets/songs/sfx-salah/bruh.mp3");
 
+      // Inisialisasi variabel untuk percobaan
       let percobaan = 0;
-      let batasPercobaan = 5;
+      let batasPercobaan = 7;
 
+      // Menampilkan jumlah kesempatan awal
       kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
 
+      // Fungsi untuk memeriksa inputan angka dari pengguna
       function periksaInputan() {
+        // Mengambil angka dari input dan mengubahnya menjadi tipe number
         let angkaTebakan = parseInt(inputan.value);
-        percobaan++;
-        batasPercobaan--;
+        percobaan++; // Menambah percobaan setiap kali tombol "Tebak!" ditekan
+        batasPercobaan--; // Mengurangi batas kesempatan setiap kali tombol ditekan
 
+        // Cek jika masih ada kesempatan tersisa
         if (batasPercobaan > 0) {
+          // Cek apakah inputan bukan angka (NaN)
           if (isNaN(angkaTebakan)) {
             pesan.innerHTML = "Masukkan angka yang valid!";
             kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
 
-            // sfx bruh
+            // efek suara saat input tidak valid
             sfxBruh.play();
             sfxBruh.currentTime = 0;
-          } else if (angkaTebakan === angkaRandom) {
+          }
+          // Cek jika tebakan benar
+          else if (angkaTebakan === angkaRandom) {
             pesan.innerHTML = "Selamat! Tebakan Anda benar.";
-            kesempatan.innerHTML = "";
+            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`; // Mengosongkan pesan kesempatan
 
-            // lagu menang
+            // play lagu kemenangan
             laguMenang.play();
 
-            // Nonaktifkan input dan tombol jika berhasil
+            // Menonaktifkan input dan button jika tebakan benar
             inputan.disabled = true;
             tebakBtn.disabled = true;
-            mainLagiBtn.style.visibility = "visible"; // Tampilkan tombol "Main Lagi"
-          } else if (angkaTebakan < angkaRandom) {
+            mainLagiBtn.style.visibility = "visible"; // Menampilkan tombol "Main Lagi"
+          }
+          // Jika tebakan terlalu kecil
+          else if (angkaTebakan < angkaRandom) {
             pesan.innerHTML = "Tebakan anda terlalu kecil.";
             kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
-            sfxSalah.play();
-            sfxSalah.currentTime = 0;
-          } else {
-            pesan.innerHTML = "Tebakan anda terlalu besar.";
-            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+
+            // sfx salah saat tebakan salah
             sfxSalah.play();
             sfxSalah.currentTime = 0;
           }
-        } else {
+          // Jika tebakan terlalu besar
+          else {
+            pesan.innerHTML = "Tebakan anda terlalu besar.";
+            kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+
+            // sfx salah saat tebakan salah
+            sfxSalah.play();
+            sfxSalah.currentTime = 0;
+          }
+        }
+        // Jika kesempatan habis
+        else {
           kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
           pesan.innerHTML = `Kesempatan Anda telah habis. Permainan berakhir! Angka yang benar adalah ${angkaRandom}`;
-          // Nonaktifkan input dan tombol jika percobaan habis
+
+          // Menonaktifkan input dan tombol saat kesempatan habis
           inputan.disabled = true;
           tebakBtn.disabled = true;
-          mainLagiBtn.style.visibility = "visible"; // Tampilkan tombol "Main Lagi"
+          mainLagiBtn.style.visibility = "visible"; // Menampilkan tombol "Main Lagi"
 
-          // lagu kalah
+          // Play lagu kekalahan
           laguKalah.play();
         }
       }
 
+      // Fungsi untuk me-reset game
       function resetGame() {
-        // lagu menang
+        // Menghentikan dan me-reset lagu kemenangan
         laguMenang.pause();
         laguMenang.currentTime = 0;
 
-        // lagu  kalah
+        // Menghentikan dan me-reset lagu kekalahan
         laguKalah.pause();
-        laguMenang.currentTime = 0;
+        laguKalah.currentTime = 0;
 
-        // Reset semua nilai dan tampilan
-        angkaRandom = Math.floor(Math.random() * 100) + 1;
-        percobaan = 0;
-        batasPercobaan = 10;
+        // Reset semua nilai variabel dan tampilan HTML
+        angkaRandom = Math.floor(Math.random() * 100) + 1; // Menghasilkan angka random baru
+        percobaan = 0; // Reset percobaan
+        batasPercobaan = 7; // Reset batas percobaan
 
+        // Mengaktifkan inputan kembali
         inputan.disabled = false;
         inputan.value = ""; // Kosongkan input
-        tebakBtn.disabled = false;
-        pesan.innerHTML = "";
-        kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`;
+        tebakBtn.disabled = false; // Aktifkan tombol tebak kembali
+        pesan.innerHTML = ""; // Kosongkan pesan
+        kesempatan.innerHTML = `Kesempatan anda tersisa: ${batasPercobaan}`; // Reset jumlah kesempatan
         mainLagiBtn.style.visibility = "hidden"; // Sembunyikan tombol "Main Lagi"
       }
     </script>
